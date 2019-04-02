@@ -1,0 +1,188 @@
+Group {
+ name Color_Flicker
+ tile_color 0xffbf00ff
+ selected true
+ xpos 15250
+ ypos 9158
+ addUserKnob {20 User l "Color Flicker"}
+ addUserKnob {26 wa_co l "<font color=yellow size=\"4\"><b>Wave Control</b></font>"}
+ addUserKnob {41 freq l "Wave Length " T proxy.freq}
+ addUserKnob {41 maxVal l Max T proxy.maxVal}
+ addUserKnob {41 minVal l Min T proxy.minVal}
+ addUserKnob {41 offset l Offset T proxy.offset}
+ addUserKnob {26 clamp l "<font color=yellow size=\"4\"><b>Clamp"}
+ addUserKnob {41 minimum l Minimum T Clamp_red.minimum}
+ addUserKnob {41 maximum l Maximum T Clamp_red.maximum}
+ addUserKnob {26 mix_4 l "<font color=yellow size=\"4\"><b>Mix "}
+ addUserKnob {41 mix_1 l "Red mix" T Copy_RED.mix}
+ addUserKnob {41 mix_2 l "Green Mix" T Copy_GREEN.mix}
+ addUserKnob {41 mix_3 l "Blue Mix" T Copy_BLUE.mix}
+ addUserKnob {41 mix l "RGB Mix" T Grade_RED.mix}
+ addUserKnob {26 ""}
+ addUserKnob {26 TEXT l "" +STARTLINE T "<font color=#808080 size=\"5\" >1.01 version</font>"}
+ addUserKnob {26 HeadlineB l "" +STARTLINE T "<font color=#808080 size=\"2\">Color Flicker© by Attila Gasparetz</font>"}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode7
+  tile_color 0x181818ff
+  label "<center><font color=red>\nRED\nrandom((frame+proxy.offset+1)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal\n<font color=green>\nGREEN\nrandom((frame+proxy.offset+3)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal\n<font color=blue>\nBLUE\nrandom((frame+proxy.offset+5)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal"
+  note_font_size 42
+  xpos -328
+  ypos -113
+  bdwidth 1537
+  bdheight 658
+ }
+ Input {
+  inputs 0
+  name Mask
+  xpos -1360
+  ypos 134
+  number 1
+ }
+ Input {
+  inputs 0
+  name Input
+  xpos -1030
+  ypos -58
+ }
+ Dot {
+  name Dot1
+  xpos -996
+  ypos 66
+ }
+set N162b5b40 [stack 0]
+ Expression {
+  channel3 alpha
+  expr3 1
+  name Expression
+  xpos -1250
+  ypos 62
+ }
+ ChannelMerge {
+  inputs 2
+  operation multiply
+  name ChannelMerge
+  tile_color 0xff
+  xpos -1250
+  ypos 122
+  disable {{"!\[exists parent.input1]"}}
+ }
+set N162c7e80 [stack 0]
+push $N162b5b40
+ Dot {
+  name Dot3
+  xpos -666
+  ypos 66
+ }
+ Grade {
+  channels {rgba.red -rgba.green -rgba.blue none}
+  white {{"random((frame+proxy.offset+1)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal"}}
+  black_clamp false
+  name Grade_RED
+  tile_color 0xff0000ff
+  xpos -700
+  ypos 128
+ }
+set N162d8c10 [stack 0]
+ Grade {
+  channels {-rgba.red rgba.green -rgba.blue none}
+  white {{"random((frame+proxy.offset+3)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal"}}
+  black_clamp false
+  mix {{Grade_RED.mix}}
+  name Grade_GREEN
+  tile_color 0x1fff00ff
+  xpos -700
+  ypos 200
+ }
+set N162e8ed0 [stack 0]
+ Grade {
+  channels {-rgba.red -rgba.green rgba.blue none}
+  white {{"random((frame+proxy.offset+5)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal"}}
+  black_clamp false
+  mix {{Grade_RED.mix}}
+  name Grade_BLUE
+  tile_color 0x3fffff
+  xpos -700
+  ypos 272
+ }
+ Clamp {
+  channels rgb
+  minimum {{Clamp_red.minimum}}
+  maximum {{Clamp_red.maximum}}
+  mix {{Grade_RED.mix}}
+  name Clamp_blue
+  tile_color 0x777777ff
+  xpos -810
+  ypos 278
+ }
+push $N162c7e80
+push $N162e8ed0
+ Clamp {
+  channels rgb
+  minimum {{Clamp_red.minimum}}
+  maximum {{Clamp_red.maximum}}
+  mix {{Grade_RED.mix}}
+  name Clamp_green
+  tile_color 0x777777ff
+  xpos -810
+  ypos 206
+ }
+push $N162c7e80
+push $N162d8c10
+ Clamp {
+  channels rgb
+  mix {{Grade_RED.mix}}
+  name Clamp_red
+  tile_color 0x777777ff
+  xpos -810
+  ypos 134
+ }
+push $N162b5b40
+ Copy {
+  inputs 2+1
+  from0 rgba.red
+  to0 rgba.red
+  name Copy_RED
+  tile_color 0xff0000ff
+  xpos -1030
+  ypos 128
+ }
+ Copy {
+  inputs 2+1
+  from0 rgba.green
+  to0 rgba.green
+  name Copy_GREEN
+  tile_color 0x1fff00ff
+  xpos -1030
+  ypos 200
+ }
+ Copy {
+  inputs 2+1
+  from0 rgba.blue
+  to0 rgba.blue
+  name Copy_BLUE
+  tile_color 0x3fffff
+  xpos -1030
+  ypos 272
+ }
+ Output {
+  name Output1
+  xpos -1030
+  ypos 398
+ }
+ NoOp {
+  inputs 0
+  name proxy
+  tile_color 0xff
+  xpos -480
+  ypos 206
+  addUserKnob {20 User}
+  addUserKnob {7 freq l Frequency R 0 10}
+  freq 3
+  addUserKnob {7 offset l Offset R 0 100}
+  addUserKnob {7 maxVal l Max R 0 20}
+  maxVal 2
+  addUserKnob {7 minVal l Min R 0 20}
+ }
+end_group
