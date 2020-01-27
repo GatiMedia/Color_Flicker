@@ -1,6 +1,9 @@
 Group {
  name GM_Color_Flicker
  tile_color 0xffbf00ff
+ selected true
+ xpos 11400
+ ypos 2055
  addUserKnob {20 User l "Color Flicker"}
  addUserKnob {26 wa_co l "<font color=yellow size=\"4\"><b>Wave Control</b></font>"}
  addUserKnob {41 freq l "Wave Length " T proxy.freq}
@@ -141,6 +144,7 @@ push $N233adcf0
   tile_color 0xff0000ff
   xpos -1030
   ypos 129
+  disable {{"!\[exists parent.input0]"}}
  }
  Copy {
   inputs 2+1
@@ -150,6 +154,7 @@ push $N233adcf0
   tile_color 0x1fff00ff
   xpos -1030
   ypos 201
+  disable {{"!\[exists parent.input0]"}}
  }
  Copy {
   inputs 2+1
@@ -159,6 +164,7 @@ push $N233adcf0
   tile_color 0x3fffff
   xpos -1030
   ypos 273
+  disable {{"!\[exists parent.input0]"}}
  }
 push $N233adcf0
  Dissolve {
