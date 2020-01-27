@@ -1,9 +1,6 @@
 Group {
  name GM_Color_Flicker
  tile_color 0xffbf00ff
- selected true
- xpos 15250
- ypos 9158
  addUserKnob {20 User l "Color Flicker"}
  addUserKnob {26 wa_co l "<font color=yellow size=\"4\"><b>Wave Control</b></font>"}
  addUserKnob {41 freq l "Wave Length " T proxy.freq}
@@ -17,7 +14,7 @@ Group {
  addUserKnob {41 mix_1 l "Red mix" T Copy_RED.mix}
  addUserKnob {41 mix_2 l "Green Mix" T Copy_GREEN.mix}
  addUserKnob {41 mix_3 l "Blue Mix" T Copy_BLUE.mix}
- addUserKnob {41 mix l "RGB Mix" T Grade_RED.mix}
+ addUserKnob {41 which l Mix T Dissolve1.which}
  addUserKnob {26 ""}
  addUserKnob {26 TEXT l "" +STARTLINE T "<font color=#808080 size=\"5\" >1.01 version</font>"}
  addUserKnob {26 HeadlineB l "" +STARTLINE T "<font color=#808080 size=\"2\">GM_Color Flicker© by Attila Gasparetz</font>"}
@@ -36,28 +33,28 @@ Group {
  Input {
   inputs 0
   name Mask
-  xpos -1360
-  ypos 134
+  xpos -1470
+  ypos 135
   number 1
  }
  Input {
   inputs 0
   name Input
   xpos -1030
-  ypos -58
+  ypos -57
  }
  Dot {
   name Dot1
   xpos -996
   ypos 66
  }
-set N162b5b40 [stack 0]
+set N233adcf0 [stack 0]
  Expression {
   channel3 alpha
   expr3 1
   name Expression
   xpos -1250
-  ypos 62
+  ypos 63
  }
  ChannelMerge {
   inputs 2
@@ -65,46 +62,31 @@ set N162b5b40 [stack 0]
   name ChannelMerge
   tile_color 0xff
   xpos -1250
-  ypos 122
+  ypos 123
   disable {{"!\[exists parent.input1]"}}
  }
-set N162c7e80 [stack 0]
-push $N162b5b40
+set N233c0030 [stack 0]
+ Dot {
+  name Dot2
+  tile_color 0x949494ff
+  note_font_size 22
+  note_font_color 0xffffffff
+  xpos -1216
+  ypos 378
+ }
+push $N233c0030
+push $N233adcf0
  Dot {
   name Dot3
   xpos -666
   ypos 66
  }
+set N233cc750 [stack 0]
  Grade {
-  channels {rgba.red -rgba.green -rgba.blue none}
-  white {{"random((frame+proxy.offset+1)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal"}}
-  black_clamp false
-  name Grade_RED
-  tile_color 0xff0000ff
+  multiply {{"random((frame+proxy.offset+5)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal"}}
+  name Grade_B
   xpos -700
-  ypos 128
- }
-set N162d8c10 [stack 0]
- Grade {
-  channels {-rgba.red rgba.green -rgba.blue none}
-  white {{"random((frame+proxy.offset+3)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal"}}
-  black_clamp false
-  mix {{Grade_RED.mix}}
-  name Grade_GREEN
-  tile_color 0x1fff00ff
-  xpos -700
-  ypos 200
- }
-set N162e8ed0 [stack 0]
- Grade {
-  channels {-rgba.red -rgba.green rgba.blue none}
-  white {{"random((frame+proxy.offset+5)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal"}}
-  black_clamp false
-  mix {{Grade_RED.mix}}
-  name Grade_BLUE
-  tile_color 0x3fffff
-  xpos -700
-  ypos 272
+  ypos 279
  }
  Clamp {
   channels rgb
@@ -113,11 +95,17 @@ set N162e8ed0 [stack 0]
   mix {{Grade_RED.mix}}
   name Clamp_blue
   tile_color 0x777777ff
-  xpos -810
-  ypos 278
+  xpos -920
+  ypos 279
  }
-push $N162c7e80
-push $N162e8ed0
+push $N233c0030
+push $N233cc750
+ Grade {
+  multiply {{"random((frame+proxy.offset+3)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal\n"}}
+  name Grade_G
+  xpos -700
+  ypos 207
+ }
  Clamp {
   channels rgb
   minimum {{Clamp_red.minimum}}
@@ -125,20 +113,26 @@ push $N162e8ed0
   mix {{Grade_RED.mix}}
   name Clamp_green
   tile_color 0x777777ff
-  xpos -810
-  ypos 206
+  xpos -920
+  ypos 207
  }
-push $N162c7e80
-push $N162d8c10
+push $N233c0030
+push $N233cc750
+ Grade {
+  multiply {{"random((frame+proxy.offset+1)/(proxy.freq)) * (proxy.maxVal-proxy.minVal) + proxy.minVal\n"}}
+  name Grade_R
+  xpos -700
+  ypos 135
+ }
  Clamp {
   channels rgb
   mix {{Grade_RED.mix}}
   name Clamp_red
   tile_color 0x777777ff
-  xpos -810
-  ypos 134
+  xpos -920
+  ypos 135
  }
-push $N162b5b40
+push $N233adcf0
  Copy {
   inputs 2+1
   from0 rgba.red
@@ -146,7 +140,7 @@ push $N162b5b40
   name Copy_RED
   tile_color 0xff0000ff
   xpos -1030
-  ypos 128
+  ypos 129
  }
  Copy {
   inputs 2+1
@@ -155,7 +149,7 @@ push $N162b5b40
   name Copy_GREEN
   tile_color 0x1fff00ff
   xpos -1030
-  ypos 200
+  ypos 201
  }
  Copy {
   inputs 2+1
@@ -164,25 +158,35 @@ push $N162b5b40
   name Copy_BLUE
   tile_color 0x3fffff
   xpos -1030
-  ypos 272
+  ypos 273
+ }
+push $N233adcf0
+ Dissolve {
+  inputs 2+1
+  which 1
+  name Dissolve1
+  label "Which: \[value which]"
+  xpos -1030
+  ypos 363
  }
  Output {
   name Output1
   xpos -1030
-  ypos 398
+  ypos 543
  }
  NoOp {
   inputs 0
   name proxy
   tile_color 0xff
   xpos -480
-  ypos 206
+  ypos 207
   addUserKnob {20 User}
   addUserKnob {7 freq l Frequency R 0 10}
-  freq 3
+  freq 2
   addUserKnob {7 offset l Offset R 0 100}
   addUserKnob {7 maxVal l Max R 0 20}
-  maxVal 2
+  maxVal 3
   addUserKnob {7 minVal l Min R 0 20}
+  minVal 1
  }
 end_group
